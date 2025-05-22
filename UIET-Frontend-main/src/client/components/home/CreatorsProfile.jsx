@@ -23,7 +23,7 @@ const creators = [
     name: "Manshi Yadav",
     img: manshiImg,
     position: "Developer",
-    mail: "manshiyadav415@gmail.com",
+    mail: "manshiyadav413@gmail.com",
   },
   {
     name: "Rishabh Sharma",
