@@ -39,7 +39,7 @@ app.use('/teacher_images', express.static(path.join(__dirname, 'uploads/teacher_
 app.use('/student_images', express.static(path.join(__dirname, 'uploads/student_images')));
 
 // CORS Configuration (Allow frontend access)
-const allowedOrigins = [process.env.CLIENT_URL || "http://localhost:5173"];
+const allowedOrigins = [process.env.CLIENT_URL || "https://6830ca700742c9c2520feb12--uiet-connect-csjmu.netlify.app"];
 if (!process.env.CLIENT_URL) {
   console.warn("⚠️ CLIENT_URL is not defined. Using default localhost URL.");
 }
