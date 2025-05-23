@@ -1,2 +1,2 @@
-const baseApi='http://localhost:3000/api';
+const baseApi='https://uiet-backend-2gin.onrender.com';
 export {baseApi};
