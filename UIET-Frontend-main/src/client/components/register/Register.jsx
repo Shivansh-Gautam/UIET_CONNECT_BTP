@@ -15,9 +15,7 @@ import { useFormik } from "formik";
 import { registerSchema } from "../../../yupSchema/registerSchema";
 import axios from "axios";
 import SnackbarAlert from "../../../basic utility components/snackbar/SnackbarAlert";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { baseApi } from "../../../environment";
 
 const Register = () => {
   const [image, setImage] = useState(null);
@@ -44,10 +42,10 @@ const Register = () => {
     initialValues: {
       department_name: "",
       email: "",
-      hod_name: "", 
+      hod_name: "",
       password: "",
       confirm_password: "",
-      passcode:"",
+      passcode: "",
     },
     validationSchema: registerSchema,
     onSubmit: async (values) => {
@@ -68,7 +66,7 @@ const Register = () => {
       fd.append("email", values.email);
 
       try {
-        await axios.post(`${API_BASE_URL}/api/department/register`, fd);
+        await axios.post(`${baseApi}/api/department/register`, fd);
         setSnackbar({
           open: true,
           message: "Registered Successfully!",
