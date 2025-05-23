@@ -20,9 +20,7 @@ import SnackbarAlert from "../../../basic utility components/snackbar/SnackbarAl
 import { loginSchema } from "../../../yupSchema/loginSchema";
 import { AuthContext } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { baseApi } from "../../../environment";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -50,44 +48,46 @@ const Login = () => {
     onSubmit: async (values) => {
       let URL;
       if (role === "student") {
-        URL = `${API_BASE_URL}/api/student/login`;
+        URL = `${baseApi}/api/student/login`;
       } else if (role === "teacher") {
-        URL = `${API_BASE_URL}/api/teacher/login`;
+        URL = `${baseApi}/api/teacher/login`;
       } else if (role === "department") {
-        URL = `${API_BASE_URL}/api/department/login`;
+        URL = `${baseApi}/api/department/login`;
       } else if (role === "director") {
-        URL = `${API_BASE_URL}/api/director/login`;
+        URL = `${baseApi}/api/director/login`;
       }
 
       try {
         const resp = await axios.post(URL, values, {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         });
 
         const token = resp.headers["authorization"] || resp.data.token;
         const user = resp.data.user;
 
-          if (token && user) {
-            // Remove "Bearer " prefix if present
-            const cleanToken = token.startsWith("Bearer ") ? token.slice(7) : token;
-            localStorage.setItem("authToken", cleanToken);
-            localStorage.setItem("user", JSON.stringify(user));
-            login(user, cleanToken);
-            console.log("User role after login:", user.role);
-            setSnackbar({
-              open: true,
-              message: "Login Successfully!",
-              severity: "success",
-            });
+        if (token && user) {
+          // Remove "Bearer " prefix if present
+          const cleanToken = token.startsWith("Bearer ")
+            ? token.slice(7)
+            : token;
+          localStorage.setItem("authToken", cleanToken);
+          localStorage.setItem("user", JSON.stringify(user));
+          login(user, cleanToken);
+          console.log("User role after login:", user.role);
+          setSnackbar({
+            open: true,
+            message: "Login Successfully!",
+            severity: "success",
+          });
 
-            console.log("Authorization Token:", cleanToken);
-          } else {
-            throw new Error("Authorization token missing in response.");
-          }
+          console.log("Authorization Token:", cleanToken);
+        } else {
+          throw new Error("Authorization token missing in response.");
+        }
 
         formik.resetForm();
 
@@ -98,17 +98,18 @@ const Login = () => {
           navigate(`/${role}`);
         }
       } catch (e) {
-        const errorMessage = e.response?.data?.details?.suggestion || 
-                             e.response?.data?.message || 
-                             "Login failed. Please try again.";
-        
+        const errorMessage =
+          e.response?.data?.details?.suggestion ||
+          e.response?.data?.message ||
+          "Login failed. Please try again.";
+
         setSnackbar({
           open: true,
           message: errorMessage,
           severity: "error",
         });
 
-        formik.setFieldValue('password', '');
+        formik.setFieldValue("password", "");
       }
     },
   });
@@ -195,38 +196,39 @@ const Login = () => {
                 <MenuItem value={"director"}>Director</MenuItem>
               </Select>
             </FormControl>
-<TextField
-  fullWidth
-  label="Email"
-  variant="outlined"
-  {...formik.getFieldProps("email")}
-  error={formik.touched.email && Boolean(formik.errors.email)}
-  helperText={formik.touched.email && formik.errors?.email}
-  inputProps={{ autoComplete: "email" }}
-/>
+            <TextField
+              fullWidth
+              label="Email"
+              variant="outlined"
+              {...formik.getFieldProps("email")}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors?.email}
+              inputProps={{ autoComplete: "email" }}
+            />
 
-<TextField
-  fullWidth
-  label="Password"
-  type={showPassword ? "text" : "password"}
-  variant="outlined"
-  {...formik.getFieldProps("password")}
-  error={formik.touched.password && Boolean(formik.errors.password)}
-  helperText={formik.touched.password && formik.errors?.password}
-  inputProps={{ autoComplete: "current-password" }} // Added autocomplete attribute
-  InputProps={{
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton onClick={() => setShowPassword(!showPassword)}>
-          {showPassword ? <VisibilityOff /> : <Visibility />}
-        </IconButton>
-      </InputAdornment>
-    ),
-  }}
-/>
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              {...formik.getFieldProps("password")}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors?.password}
+              inputProps={{ autoComplete: "current-password" }} // Added autocomplete attribute
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
             <Typography variant="body2" color="textSecondary">
-              Password must contain at least 8 characters, one uppercase letter, one number, and one special character.
+              Password must contain at least 8 characters, one uppercase letter,
+              one number, and one special character.
             </Typography>
 
             <Button fullWidth variant="contained" color="primary" type="submit">
