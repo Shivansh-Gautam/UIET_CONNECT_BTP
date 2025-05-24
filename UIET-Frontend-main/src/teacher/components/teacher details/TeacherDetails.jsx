@@ -7,7 +7,7 @@ import Calendar from "../../../student/components/student details/Calendar";
 const TeacherDetails = () => {
   return (
     <>
-      <Greeting role={"teacher"} apiEndpoint={"teacher/fetch-single"} />
+      <Greeting role={"teacher"} apiEndpoint={"api/teacher/fetch-single"} />
       <div className="p-4">
         <Grid container spacing={3}>
           {/* Left Column: ToDo + Notification side by side */}

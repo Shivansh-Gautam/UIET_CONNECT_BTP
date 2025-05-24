@@ -8,7 +8,7 @@ import Notification from "./Notification";
 const StudentDetails = () => {
   return (
     <>
-      <Greeting role={"student"} apiEndpoint={"student/fetch-single"} />
+      <Greeting role={"student"} apiEndpoint={"api/student/fetch-single"} />
 
       <div className="p-4">
         <Grid container spacing={3}>
