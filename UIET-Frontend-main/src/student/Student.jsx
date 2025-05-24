@@ -214,7 +214,7 @@ export default function Student() {
     }
     try {
       setLoading(true);
-      const response = await axios.get(`${baseApi}/student/fetch-single`, {
+      const response = await axios.get(`${baseApi}/api/student/fetch-single`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStudent(response.data.student);
