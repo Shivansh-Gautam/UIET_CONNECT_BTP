@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Department from "./department/department";
+import Department from "./department/Department";
 import AttendanceStudentsList from "./department/components/attendance/AttendanceStudentsList";
 import Examinations from "./department/components/examinations/Examinations";
 import Notice from "./department/components/notice/Notice";
