@@ -9,7 +9,7 @@ import {
   Paper,
 } from "@mui/material";
 import { ArrowForward, Phone } from "@mui/icons-material";
-import img1 from "../../../assets/Teacher holding a tablet.jpeg"; // Ensure this path is correct
+import img1 from "../../../assets/Teacher_Holding_Tablet.jpeg"; // Updated to match renamed file without spaces
 
 const HeroSection = () => {
   return (
