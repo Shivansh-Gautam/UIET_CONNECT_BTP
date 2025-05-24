@@ -62,7 +62,7 @@ const StudentProfile = () => {
     }
     try {
       setLoading(true);
-      const response = await axios.get(`${baseApi}/student/fetch-single`, {
+      const response = await axios.get(`${baseApi}/api/student/fetch-single`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStudent(response.data.student);
@@ -101,7 +101,7 @@ const StudentProfile = () => {
         }
       }
 
-      await axios.patch(`${baseApi}/student/update/${student._id}`, data, {
+      await axios.patch(`${baseApi}/api/student/update/${student._id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

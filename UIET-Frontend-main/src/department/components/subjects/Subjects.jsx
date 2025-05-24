@@ -49,7 +49,7 @@ export default function Subjects() {
       return;
     }
     try {
-      const response = await axios.get(`${baseApi}/semester/all`, {
+      const response = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSemesters(response.data.data);
@@ -93,7 +93,7 @@ export default function Subjects() {
   // Handles deleting a subject
   const handleDelete = async (id) => {
     try {
-      await axios.get(`${baseApi}/subject/delete/${id}`, {
+      await axios.get(`${baseApi}/api/subject/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAlert({
@@ -123,10 +123,13 @@ export default function Subjects() {
       return;
     }
     try {
-      const response = await axios.get(`${baseApi}/subject/fetch-with-query`, {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${baseApi}/api/subject/fetch-with-query`,
+        {
+          params,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSubject(response.data.subjects);
     } catch (error) {
       console.error("Error fetching subjects:", error);
@@ -165,9 +168,13 @@ export default function Subjects() {
         };
         if (editId) {
           // Update an existing subject
-          await axios.patch(`${baseApi}/subject/update/${editId}`, payload, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await axios.patch(
+            `${baseApi}/api/subject/update/${editId}`,
+            payload,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           setAlert({
             open: true,
             message: "Subject updated successfully",
@@ -175,7 +182,7 @@ export default function Subjects() {
           });
         } else {
           // Add a new subject
-          await axios.post(`${baseApi}/subject/create`, payload, {
+          await axios.post(`${baseApi}/api/subject/create`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setAlert({

@@ -17,7 +17,7 @@ import {
   ListItemText,
   IconButton,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import { baseApi } from "../../../environment";
 
@@ -38,7 +38,8 @@ const AssignmentTeacher = () => {
   // const [totalStudents, setTotalStudents] = useState(0);
   // const [submissionCounts, setSubmissionCounts] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedAssignmentSubmissions, setSelectedAssignmentSubmissions] = useState([]);
+  const [selectedAssignmentSubmissions, setSelectedAssignmentSubmissions] =
+    useState([]);
   const [modalLoading, setModalLoading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -88,7 +89,7 @@ const AssignmentTeacher = () => {
   const fetchSemesters = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${baseApi}/semester/all`, {
+      const { data } = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (data && data.data) {
@@ -120,10 +121,13 @@ const AssignmentTeacher = () => {
   const fetchSubjects = async (semesterId) => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${baseApi}/subject/fetch-with-query`, {
-        params: { student_class: semesterId },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get(
+        `${baseApi}/api/subject/fetch-with-query`,
+        {
+          params: { student_class: semesterId },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (data && data.subjects) {
         setSubjects(data.subjects);
       } else {
@@ -141,7 +145,7 @@ const AssignmentTeacher = () => {
   /*
   const fetchTotalStudents = async (semesterId) => {
     try {
-      const { data } = await axios.get(`${baseApi}/students/total-count`, {
+      const { data } = await axios.get(`${baseApi}/api/students/total-count`, {
         params: { semesterId: semesterId },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -179,7 +183,7 @@ const AssignmentTeacher = () => {
       if (params.subject && params.subject !== "") {
         queryParams.subjectId = params.subject;
       }
-      const { data } = await axios.get(`${baseApi}/assignments`, {
+      const { data } = await axios.get(`${baseApi}/api/assignments`, {
         params: queryParams,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -198,7 +202,7 @@ const AssignmentTeacher = () => {
       for (const year of uniqueYears) {
         // Fetch submission counts for this year
         try {
-          const { data: submissionCountsData } = await axios.get(`${baseApi}/assignments/submission-counts-bulk`, {
+          const { data: submissionCountsData } = await axios.get(`${baseApi}/api/assignments/submission-counts-bulk`, {
             params: {
               teacherId,
               year,
@@ -217,7 +221,7 @@ const AssignmentTeacher = () => {
 
         // Fetch total students for this year
         try {
-          const { data: totalStudentsData } = await axios.get(`${baseApi}/students/total-count`, {
+          const { data: totalStudentsData } = await axios.get(`${baseApi}/api/students/total-count`, {
             params: { semesterId: year },
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -236,7 +240,6 @@ const AssignmentTeacher = () => {
       setSubmissionCounts(aggregatedSubmissionCounts);
       setTotalStudents(aggregatedTotalStudents);
       */
-
     } catch (error) {
       console.error("Error fetching assignments:", error);
       setAssignments([]);
@@ -288,7 +291,7 @@ const AssignmentTeacher = () => {
 
     setUploadLoading(true);
     try {
-      await axios.post(`${baseApi}/assignments`, formData, {
+      await axios.post(`${baseApi}/api/assignments`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -317,10 +320,13 @@ const AssignmentTeacher = () => {
     setModalLoading(true);
     setModalOpen(true);
     try {
-      const { data } = await axios.get(`${baseApi}/assignments/student/submissions`, {
-        params: { assignmentId },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get(
+        `${baseApi}/api/assignments/student/submissions`,
+        {
+          params: { assignmentId },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       console.log("Student submissions data fetched:", data);
       setSelectedAssignmentSubmissions(data);
     } catch (error) {
@@ -341,7 +347,7 @@ const AssignmentTeacher = () => {
       <Typography
         variant="h4"
         gutterBottom
-        sx={{ mb: 4, fontWeight: "bold", textAlign: "center"}}
+        sx={{ mb: 4, fontWeight: "bold", textAlign: "center" }}
       >
         Assignment Upload
       </Typography>
@@ -518,7 +524,7 @@ const AssignmentTeacher = () => {
           sx={{ fontWeight: "bold", textAlign: "center", mb: 3, mt: 5 }}
         >
           Uploaded Assignments
-        </Typography >
+        </Typography>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
             <CircularProgress />
@@ -548,7 +554,9 @@ const AssignmentTeacher = () => {
               pathSegments.length > 0
                 ? pathSegments[pathSegments.length - 1]
                 : "";
-            const fileUrl = filename ? `${baseApi}/assignments/file/${filename}` : null;
+            const fileUrl = filename
+              ? `${baseApi}/api/assignments/file/${filename}`
+              : null;
 
             return (
               <Card
@@ -589,7 +597,8 @@ const AssignmentTeacher = () => {
                   </Typography>
                   {assignment.createdAt && (
                     <Typography sx={{ mb: 1 }}>
-                      Assignment Creation Date : {new Date(assignment.createdAt).toLocaleDateString()}
+                      Assignment Creation Date :{" "}
+                      {new Date(assignment.createdAt).toLocaleDateString()}
                     </Typography>
                   )}
                   {fileUrl && (
@@ -635,7 +644,11 @@ const AssignmentTeacher = () => {
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography id="student-submissions-modal-title" variant="h6" component="h2">
+            <Typography
+              id="student-submissions-modal-title"
+              variant="h6"
+              component="h2"
+            >
               Student Submissions
             </Typography>
             <IconButton onClick={handleCloseModal} size="small">
@@ -657,7 +670,9 @@ const AssignmentTeacher = () => {
                   pathSegments.length > 0
                     ? pathSegments[pathSegments.length - 1]
                     : "";
-                const fileUrl = filename ? `${baseApi}/assignments/file/${filename}` : null;
+                const fileUrl = filename
+                  ? `${baseApi}/api/assignments/file/${filename}`
+                  : null;
 
                 return (
                   <ListItem key={submission._id} divider>

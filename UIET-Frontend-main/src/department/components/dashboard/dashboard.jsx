@@ -30,7 +30,7 @@ export default function Dashboard() {
     }
 
     axios
-      .patch(`${baseApi}/department/update`, fd, {
+      .patch(`${baseApi}/api/department/update`, fd, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
     if (token) {
       axios
-        .get(`${baseApi}/department/fetch-single`, {
+        .get(`${baseApi}/api/department/fetch-single`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

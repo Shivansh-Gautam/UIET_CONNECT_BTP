@@ -1,5 +1,15 @@
 import { useEffect, useState, useContext } from "react";
-import { Box, Typography, Card, CardContent, CardHeader, Divider, CircularProgress, Alert, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  CircularProgress,
+  Alert,
+  Button,
+} from "@mui/material";
 import axios from "axios";
 import { baseApi } from "../../../environment";
 import { AuthContext } from "../../../context/AuthContext";
@@ -27,10 +37,10 @@ export default function NoticeTeacher() {
     setError(null);
     try {
       const [adminResponse, directorResponse] = await Promise.all([
-        axios.get(`${baseApi}/notice/teacher`, {
+        axios.get(`${baseApi}/api/notice/teacher`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get(`${baseApi}/directorNotice/recipient`, {
+        axios.get(`${baseApi}/api/directorNotice/recipient`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -40,16 +50,18 @@ export default function NoticeTeacher() {
       directorNotices = directorNotices.filter((notice) => {
         if (!notice.recipientName && !notice.recipientNames) return false;
         const userNameLower = (user?.name || "").toLowerCase();
-        if (notice.recipientName && typeof notice.recipientName === 'string') {
+        if (notice.recipientName && typeof notice.recipientName === "string") {
           if (notice.recipientName.toLowerCase().includes(userNameLower)) {
             return true;
           }
         }
         if (notice.recipientNames && Array.isArray(notice.recipientNames)) {
-          return notice.recipientNames.some(name => name.toLowerCase() === userNameLower);
+          return notice.recipientNames.some(
+            (name) => name.toLowerCase() === userNameLower
+          );
         }
         // Also consider audience HOD notices where recipientName matches user name
-        if (notice.audience === 'HODs' && notice.recipientName) {
+        if (notice.audience === "HODs" && notice.recipientName) {
           return notice.recipientName.toLowerCase() === userNameLower;
         }
         return false;
@@ -57,7 +69,9 @@ export default function NoticeTeacher() {
       // Combine notices
       const combinedNotices = [...adminNotices, ...directorNotices];
       // Sort combined notices by createdAt descending
-      combinedNotices.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      combinedNotices.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
       setNotices(combinedNotices);
     } catch (error) {
       handleAxiosError(error);
@@ -86,10 +100,22 @@ export default function NoticeTeacher() {
       }}
     >
       <CardHeader
-        title={<Typography variant="h6" sx={{ fontWeight: "bold" }}>{notice.title}</Typography>}
+        title={
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {notice.title}
+          </Typography>
+        }
         subheader={
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="body2" color="text.secondary">Audience: {notice.audience}</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Audience: {notice.audience}
+            </Typography>
             {notice.createdAt && (
               <Typography variant="caption" color="text.secondary">
                 {new Date(notice.createdAt).toLocaleDateString()}
@@ -122,7 +148,9 @@ export default function NoticeTeacher() {
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : notices.length === 0 ? (
-        <Typography variant="body1" color="text.secondary">No notices to display.</Typography>
+        <Typography variant="body1" color="text.secondary">
+          No notices to display.
+        </Typography>
       ) : (
         notices.map(renderNoticeCard)
       )}

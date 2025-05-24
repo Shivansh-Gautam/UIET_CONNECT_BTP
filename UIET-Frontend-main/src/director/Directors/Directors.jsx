@@ -35,7 +35,7 @@ const Directors = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${baseApi}/teacher/fetch-all`, {
+      const response = await axios.get(`${baseApi}/api/teacher/fetch-all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeachers(response.data.teachers || []);
@@ -52,7 +52,7 @@ const Directors = () => {
     if (!token) return;
     try {
       const response = await axios.get(
-        `${baseApi}/director/teacher/selected-director`,
+        `${baseApi}/api/director/teacher/selected-director`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -134,7 +134,7 @@ const Directors = () => {
 
       // Call backend API to create or update director from teacher selection
       const response = await axios.post(
-        `${baseApi}/director/create-or-update-from-teacher`,
+        `${baseApi}/api/director/create-or-update-from-teacher`,
         { teacherId: id, isActive: isSelecting },
         {
           headers: { Authorization: `Bearer ${token}` },

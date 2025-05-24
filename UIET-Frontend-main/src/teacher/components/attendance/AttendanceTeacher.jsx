@@ -57,7 +57,7 @@ const AttendanceStudentsList = () => {
 
   const fetchSemesters = async () => {
     try {
-      const res = await axios.get(`${baseApi}/semester/all`, {
+      const res = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSemesters(res.data.data);
@@ -68,7 +68,7 @@ const AttendanceStudentsList = () => {
 
   const fetchSubjects = async (semesterId) => {
     try {
-      const res = await axios.get(`${baseApi}/subject/fetch-with-query`, {
+      const res = await axios.get(`${baseApi}/api/subject/fetch-with-query`, {
         params: { student_class: semesterId },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -81,7 +81,7 @@ const AttendanceStudentsList = () => {
   const fetchStoredPDFs = async () => {
     setPdfLoading(true);
     try {
-      const res = await axios.get(`${baseApi}/attendance/pdfs`, {
+      const res = await axios.get(`${baseApi}/api/attendance/pdfs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) {
@@ -121,7 +121,7 @@ const AttendanceStudentsList = () => {
         })
       );
       const response = await axios.post(
-        `${baseApi}/attendance/mark`,
+        `${baseApi}/api/attendance/mark`,
         {
           subjectId: params.subject,
           attendanceData: attendanceDataArray,
@@ -140,7 +140,7 @@ const AttendanceStudentsList = () => {
         try {
           console.log("Fetching PDF from API...");
           const pdfResponse = await axios.get(
-            `${baseApi}/attendance/generateAttendancePDF/${params.subject}/${params.date}`,
+            `${baseApi}/api/attendance/generateAttendancePDF/${params.subject}/${params.date}`,
             {
               headers: { Authorization: `Bearer ${token}` },
               responseType: "blob",
@@ -225,7 +225,7 @@ const AttendanceStudentsList = () => {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get(`${baseApi}/student/fetch-with-query`, {
+      const res = await axios.get(`${baseApi}/api/student/fetch-with-query`, {
         params,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -511,7 +511,7 @@ const AttendanceStudentsList = () => {
                         onClick={async () => {
                           try {
                             const response = await axios.get(
-                              `${baseApi}/attendance/pdf/${pdf.id}`,
+                              `${baseApi}/api/attendance/pdf/${pdf.id}`,
                               {
                                 headers: { Authorization: `Bearer ${token}` },
                                 responseType: "blob",

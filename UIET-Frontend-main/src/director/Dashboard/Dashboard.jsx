@@ -65,7 +65,7 @@ const Dashboard = () => {
     }
     try {
       setLoading(true);
-      const response = await axios.get(`${baseApi}/director/fetch-single`, {
+      const response = await axios.get(`${baseApi}/api/director/fetch-single`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Fetched teacher data:", response.data.teacher);

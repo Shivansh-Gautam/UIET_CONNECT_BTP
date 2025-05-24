@@ -33,7 +33,7 @@ export default function ExaminationsStudent() {
   React.useEffect(() => {
     const fetchSemesters = async () => {
       try {
-        const res = await axios.get(`${baseApi}/semester/all`, {
+        const res = await axios.get(`${baseApi}/api/semester/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSemesters(res.data.data || []);
@@ -53,7 +53,7 @@ export default function ExaminationsStudent() {
     if (!semesterId) return; // Do not fetch if semesterId is falsy
     setSnackbar({ ...snackbar, open: false }); // Clear previous snackbar before fetching
     try {
-      const res = await axios.get(`${baseApi}/subject/fetch-with-query`, {
+      const res = await axios.get(`${baseApi}/api/subject/fetch-with-query`, {
         params: { year: semesterId },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -84,7 +84,7 @@ export default function ExaminationsStudent() {
     if (!semesterId) return;
     try {
       const res = await axios.get(
-        `${baseApi}/examination/semester/${semesterId}`,
+        `${baseApi}/api/examination/semester/${semesterId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -126,9 +126,13 @@ export default function ExaminationsStudent() {
 
       try {
         if (editId) {
-          await axios.patch(`${baseApi}/examination/update/${editId}`, values, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await axios.patch(
+            `${baseApi}/api/examination/update/${editId}`,
+            values,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           setSnackbar({
             open: true,
             message: "Exam updated successfully",
@@ -137,7 +141,7 @@ export default function ExaminationsStudent() {
           setEditId(null);
         } else {
           await axios.post(
-            `${baseApi}/examination/create`,
+            `${baseApi}/api/examination/create`,
             {
               date: formattedDate,
               examType: values.examType,

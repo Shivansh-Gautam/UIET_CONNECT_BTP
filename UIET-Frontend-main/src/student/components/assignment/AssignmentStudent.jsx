@@ -24,9 +24,12 @@ const AssignmentStudent = () => {
     const fetchStudentDetails = async () => {
       if (!token) return;
       try {
-        const response = await axios.get(`${baseApi}/student/fetch-single`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${baseApi}/api/student/fetch-single`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (response.data && response.data.student) {
           const student = response.data.student;
           console.log("Fetched student details:", student);
@@ -46,7 +49,6 @@ const AssignmentStudent = () => {
     fetchStudentDetails();
   }, [token]);
 
-
   useEffect(() => {
     if (year) {
       console.log("Fetching assignments for year:", year);
@@ -58,7 +60,7 @@ const AssignmentStudent = () => {
     setLoading(true);
     try {
       // Fetch assignments filtered by year, including done status
-      const { data } = await axios.get(`${baseApi}/assignments/student`, {
+      const { data } = await axios.get(`${baseApi}/api/assignments/student`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { year: getYearNameById(year) },
       });
@@ -71,7 +73,7 @@ const AssignmentStudent = () => {
 
       // Initialize doneAssignments state from fetched data
       const doneStatus = {};
-      (data.assignments || []).forEach(assignment => {
+      (data.assignments || []).forEach((assignment) => {
         if (assignment.done) {
           doneStatus[assignment._id] = true;
         }
@@ -89,74 +91,78 @@ const AssignmentStudent = () => {
   const handleFileUpload = (event, assignmentId) => {
     console.log(`handleFileUpload called for assignmentId: ${assignmentId}`);
     const file = event.target.files[0];
-    console.log('Selected file:', file);
-    setSelectedFiles(prev => ({
+    console.log("Selected file:", file);
+    setSelectedFiles((prev) => ({
       ...prev,
-      [assignmentId]: file
+      [assignmentId]: file,
     }));
   };
 
   const handleUploadClick = async (assignmentId) => {
     console.log(`handleUploadClick called for assignmentId: ${assignmentId}`);
     if (!selectedFiles[assignmentId]) {
-      console.log('No file selected for upload');
+      console.log("No file selected for upload");
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', selectedFiles[assignmentId]);
+    formData.append("file", selectedFiles[assignmentId]);
 
     // Decode token to get studentId
     let studentId = null;
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = JSON.parse(atob(token.split(".")[1]));
         studentId = payload.id;
       } catch (e) {
-        console.error('Error decoding token:', e);
+        console.error("Error decoding token:", e);
       }
     }
 
     if (!studentId) {
-      setUploadStatus(prev => ({
+      setUploadStatus((prev) => ({
         ...prev,
-        [assignmentId]: 'User not authenticated'
+        [assignmentId]: "User not authenticated",
       }));
       return;
     }
 
-    formData.append('studentId', studentId);
-    formData.append('assignmentId', assignmentId);
+    formData.append("studentId", studentId);
+    formData.append("assignmentId", assignmentId);
 
     try {
-      setUploadStatus(prev => ({
+      setUploadStatus((prev) => ({
         ...prev,
-        [assignmentId]: 'Uploading...'
+        [assignmentId]: "Uploading...",
       }));
 
       const response = await axios.post(
-        `${baseApi}/assignments/student/upload`,
+        `${baseApi}/api/assignments/student/upload`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      if (response.status === 201 && response.data.message && response.data.message.toLowerCase().includes('success')) {
-        setUploadStatus(prev => ({
+      if (
+        response.status === 201 &&
+        response.data.message &&
+        response.data.message.toLowerCase().includes("success")
+      ) {
+        setUploadStatus((prev) => ({
           ...prev,
-          [assignmentId]: 'Upload successful'
+          [assignmentId]: "Upload successful",
         }));
         // Mark assignment as done
-        setDoneAssignments(prev => ({
+        setDoneAssignments((prev) => ({
           ...prev,
-          [assignmentId]: true
+          [assignmentId]: true,
         }));
         // Clear selected file after successful upload
-        setSelectedFiles(prev => {
+        setSelectedFiles((prev) => {
           const newSelected = { ...prev };
           delete newSelected[assignmentId];
           return newSelected;
@@ -164,16 +170,16 @@ const AssignmentStudent = () => {
         // Optionally refresh assignments list or update UI accordingly
         fetchAssignments();
       } else {
-        setUploadStatus(prev => ({
+        setUploadStatus((prev) => ({
           ...prev,
-          [assignmentId]: 'Upload failed'
+          [assignmentId]: "Upload failed",
         }));
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
-      setUploadStatus(prev => ({
+      console.error("Error uploading file:", error);
+      setUploadStatus((prev) => ({
         ...prev,
-        [assignmentId]: 'Upload error'
+        [assignmentId]: "Upload error",
       }));
     }
   };
@@ -236,7 +242,9 @@ const AssignmentStudent = () => {
             pathSegments.length > 0
               ? pathSegments[pathSegments.length - 1]
               : "";
-          const fileUrl = filename ? `${baseApi}/assignments/file/${filename}` : null;
+          const fileUrl = filename
+            ? `${baseApi}/api/assignments/file/${filename}`
+            : null;
 
           return (
             <Card
@@ -251,7 +259,13 @@ const AssignmentStudent = () => {
                 },
               }}
             >
-              <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <CardContent
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: "medium" }}>
                     Subject: {subjectName}
@@ -273,7 +287,8 @@ const AssignmentStudent = () => {
                   </Typography>
                   {assignment.createdAt && (
                     <Typography sx={{ mb: 1 }}>
-                      Assignment Creation Date : {new Date(assignment.createdAt).toLocaleDateString()}
+                      Assignment Creation Date :{" "}
+                      {new Date(assignment.createdAt).toLocaleDateString()}
                     </Typography>
                   )}
                   {fileUrl && (
@@ -291,39 +306,52 @@ const AssignmentStudent = () => {
                   )}
                 </Box>
                 <Box sx={{ ml: 3, minWidth: 200 }}>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => handleFileUpload(e, assignment._id)}
-            style={{ display: "block", marginBottom: 8 }}
-            disabled={doneAssignments[assignment._id]} // Disable if done
-          />
-          <button
-            onClick={() => handleUploadClick(assignment._id)}
-            disabled={!selectedFiles[assignment._id] || doneAssignments[assignment._id]} // Disable if done
-            style={{
-              padding: "6px 12px",
-              backgroundColor: doneAssignments[assignment._id] ? "gray" : "#1976d2",
-              color: "white",
-              border: "none",
-              borderRadius: 4,
-              cursor: !selectedFiles[assignment._id] || doneAssignments[assignment._id] ? "not-allowed" : "pointer",
-            }}
-          >
-            {doneAssignments[assignment._id] ? "Done" : "Upload"}
-          </button>
-          {uploadStatus[assignment._id] && (
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mt: 1, 
-                color: uploadStatus[assignment._id].toLowerCase().includes('success') ? 'success.main' : 'error.main',
-                fontWeight: 'bold'
-              }}
-            >
-              {uploadStatus[assignment._id]}
-            </Typography>
-          )}
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => handleFileUpload(e, assignment._id)}
+                    style={{ display: "block", marginBottom: 8 }}
+                    disabled={doneAssignments[assignment._id]} // Disable if done
+                  />
+                  <button
+                    onClick={() => handleUploadClick(assignment._id)}
+                    disabled={
+                      !selectedFiles[assignment._id] ||
+                      doneAssignments[assignment._id]
+                    } // Disable if done
+                    style={{
+                      padding: "6px 12px",
+                      backgroundColor: doneAssignments[assignment._id]
+                        ? "gray"
+                        : "#1976d2",
+                      color: "white",
+                      border: "none",
+                      borderRadius: 4,
+                      cursor:
+                        !selectedFiles[assignment._id] ||
+                        doneAssignments[assignment._id]
+                          ? "not-allowed"
+                          : "pointer",
+                    }}
+                  >
+                    {doneAssignments[assignment._id] ? "Done" : "Upload"}
+                  </button>
+                  {uploadStatus[assignment._id] && (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 1,
+                        color: uploadStatus[assignment._id]
+                          .toLowerCase()
+                          .includes("success")
+                          ? "success.main"
+                          : "error.main",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {uploadStatus[assignment._id]}
+                    </Typography>
+                  )}
                 </Box>
               </CardContent>
             </Card>

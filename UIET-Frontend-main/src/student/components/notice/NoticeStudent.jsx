@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, CardHeader, Divider } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+} from "@mui/material";
 import axios from "axios";
 import { baseApi } from "../../../environment.js";
 
@@ -12,9 +19,12 @@ export default function NoticeStudent() {
 
     const fetchStudentYear = async () => {
       try {
-        const response = await axios.get(`${baseApi}/student/fetch-single`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${baseApi}/api/student/fetch-single`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const yearId = response.data.student?.student_class?._id || null;
         setStudentYear(yearId);
       } catch (error) {
@@ -24,7 +34,7 @@ export default function NoticeStudent() {
 
     const fetchNotices = async () => {
       try {
-        const response = await axios.get(`${baseApi}/notice/student`, {
+        const response = await axios.get(`${baseApi}/api/notice/student`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setNotices(response.data.data);
@@ -64,7 +74,9 @@ export default function NoticeStudent() {
   return (
     <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 3, mt: 4 }}>
       {filteredNotices.length === 0 ? (
-        <Typography variant="h6" align="center">No notice found</Typography>
+        <Typography variant="h6" align="center">
+          No notice found
+        </Typography>
       ) : (
         filteredNotices.map((notice) => (
           <Card
@@ -79,10 +91,22 @@ export default function NoticeStudent() {
             }}
           >
             <CardHeader
-              title={<Typography variant="h6" sx={{ fontWeight: "bold" }}>{notice.title}</Typography>}
+              title={
+                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  {notice.title}
+                </Typography>
+              }
               subheader={
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Typography variant="body2" color="text.secondary">Audience: {notice.audience}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Audience: {notice.audience}
+                  </Typography>
                   {notice.createdAt && (
                     <Typography variant="caption" color="text.secondary">
                       {new Date(notice.createdAt).toLocaleDateString()}

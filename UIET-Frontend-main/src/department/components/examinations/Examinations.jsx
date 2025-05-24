@@ -43,7 +43,7 @@ export default function Examinations() {
 
   const fetchSemesters = async () => {
     try {
-      const res = await axios.get(`${baseApi}/semester/all`, {
+      const res = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSemesters(res.data.data || []);
@@ -58,7 +58,7 @@ export default function Examinations() {
 
   const fetchSubjects = async (semesterId) => {
     try {
-      const res = await axios.get(`${baseApi}/subject/fetch-with-query`, {
+      const res = await axios.get(`${baseApi}/api/subject/fetch-with-query`, {
         params: { student_class: semesterId },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -76,7 +76,7 @@ export default function Examinations() {
     if (!semesterId) return;
     try {
       const res = await axios.get(
-        `${baseApi}/examination/semester/${semesterId}`,
+        `${baseApi}/api/examination/semester/${semesterId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -117,9 +117,13 @@ export default function Examinations() {
 
       try {
         if (editId) {
-          await axios.patch(`${baseApi}/examination/update/${editId}`, values, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await axios.patch(
+            `${baseApi}/api/examination/update/${editId}`,
+            values,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           setSnackbar({
             open: true,
             message: "Exam updated successfully",
@@ -128,7 +132,7 @@ export default function Examinations() {
           setEditId(null);
         } else {
           await axios.post(
-            `${baseApi}/examination/create`,
+            `${baseApi}/api/examination/create`,
             {
               date: formattedDate,
               examType: values.examType,
@@ -171,7 +175,7 @@ export default function Examinations() {
   const handleDelete = async (id) => {
     if (confirm("Are you sure You want to delete?")) {
       try {
-        await axios.get(`${baseApi}/examination/delete/${id}`, {
+        await axios.get(`${baseApi}/api/examination/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSnackbar({

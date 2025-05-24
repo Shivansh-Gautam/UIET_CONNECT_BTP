@@ -49,7 +49,7 @@ const Teachers = () => {
   //     return;
   //   }
   //   try {
-  //     const response = await axios.get(`${baseApi}/semester/all`, {
+  //     const response = await axios.get(`${baseApi}/api/semester/all`, {
   //       headers: { Authorization: `Bearer ${token}` },
   //     });
   //     setSemesters(response.data.data);
@@ -99,7 +99,7 @@ const Teachers = () => {
       return;
     }
     try {
-      await axios.delete(`${baseApi}/teacher/delete/${teacherId}`, {
+      await axios.delete(`${baseApi}/api/teacher/delete/${teacherId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSnackbar({
@@ -135,10 +135,13 @@ const Teachers = () => {
       return;
     }
     try {
-      const response = await axios.get(`${baseApi}/teacher/fetch-with-query`, {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${baseApi}/api/teacher/fetch-with-query`,
+        {
+          params,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setTeachers(response.data.teachers);
     } catch (error) {
       console.error("Error fetching teachers:", error);
@@ -214,7 +217,7 @@ const Teachers = () => {
 
       try {
         if (edit) {
-          await axios.patch(`${baseApi}/teacher/update/${editId}`, fd, {
+          await axios.patch(`${baseApi}/api/teacher/update/${editId}`, fd, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setSnackbar({
@@ -223,7 +226,7 @@ const Teachers = () => {
             severity: "success",
           });
         } else {
-          await axios.post(`${baseApi}/teacher/register`, fd, {
+          await axios.post(`${baseApi}/api/teacher/register`, fd, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setSnackbar({

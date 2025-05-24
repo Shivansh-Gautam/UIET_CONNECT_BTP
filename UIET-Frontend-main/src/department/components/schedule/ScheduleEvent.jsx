@@ -7,7 +7,11 @@ import { Box, MenuItem, TextField, Button, Typography } from "@mui/material";
 import SnackbarAlert from "../../../basic utility components/snackbar/SnackbarAlert";
 
 export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const periods = [
     { id: 1, label: "Monday", day: 1 },
@@ -33,10 +37,10 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
       const token = localStorage.getItem("authToken");
 
       const [teacherResponse, subjectResponse] = await Promise.all([
-        axios.get(`${baseApi}/teacher/fetch-with-query`, {
+        axios.get(`${baseApi}/api/teacher/fetch-with-query`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get(`${baseApi}/subject/fetch-with-query`, {
+        axios.get(`${baseApi}/api/subject/fetch-with-query`, {
           params: { student_class: selectedSemester },
           headers: { Authorization: `Bearer ${token}` },
         }),
@@ -46,7 +50,11 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
       setSubjects(subjectResponse.data.subjects || []);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setSnackbar({ open: true, message: "Failed to fetch data", severity: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to fetch data",
+        severity: "error",
+      });
     }
   };
 
@@ -55,7 +63,7 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
       teacher: "",
       subject: "",
       semester: selectedSemester || "", // Set semester value dynamically
-      day: "", 
+      day: "",
       startTime: "",
       endTime: "",
     },
@@ -67,7 +75,7 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
         const scheduleData = {
           teacher: values.teacher,
           subject: values.subject,
-          semester:selectedSemester,
+          semester: selectedSemester,
           day: values.day, // Ensure it's a number
           startTime: values.startTime,
           endTime: values.endTime,
@@ -75,20 +83,32 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
 
         console.log("Submitting schedule:", scheduleData); // Debugging
 
-        const response = await axios.post(`${baseApi}/schedule/create`, scheduleData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.post(
+          `${baseApi}/api/schedule/create`,
+          scheduleData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         console.log("Schedule saved successfully:", response.data);
-        setSnackbar({ open: true, message: "Schedule added successfully", severity: "success" });
+        setSnackbar({
+          open: true,
+          message: "Schedule added successfully",
+          severity: "success",
+        });
 
         resetForm();
         onEventAdded(); // Call the callback to update the UI
       } catch (error) {
         console.error("Error saving schedule:", error.response?.data || error);
-        setSnackbar({ open: true, message: error.response?.data?.message || "Error saving schedule", severity: "error" });
+        setSnackbar({
+          open: true,
+          message: error.response?.data?.message || "Error saving schedule",
+          severity: "error",
+        });
       }
-    }
+    },
   });
 
   return (
@@ -96,7 +116,11 @@ export default function ScheduleEvent({ selectedSemester, onEventAdded }) {
       <Typography variant="h5" gutterBottom>
         Schedule Event
       </Typography>
-      <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2 }} onSubmit={formik.handleSubmit}>
+      <Box
+        component="form"
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        onSubmit={formik.handleSubmit}
+      >
         <TextField
           select
           fullWidth

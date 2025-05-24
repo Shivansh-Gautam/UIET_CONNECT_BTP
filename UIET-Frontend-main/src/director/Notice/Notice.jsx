@@ -1,9 +1,23 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { baseApi } from '../../environment';
-import { Box, Typography, Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { baseApi } from "../../environment";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  IconButton,
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Notice = () => {
   return (
@@ -110,9 +124,9 @@ const Notice = () => {
 };
 
 const InnerNotice = () => {
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
-  const [audience, setAudience] = useState('');
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [audience, setAudience] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [hods, setHods] = useState([]);
   const [selectedAudienceMembers, setSelectedAudienceMembers] = useState([]);
@@ -120,32 +134,34 @@ const InnerNotice = () => {
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editNoticeId, setEditNoticeId] = useState(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editMessage, setEditMessage] = useState('');
+  const [editTitle, setEditTitle] = useState("");
+  const [editMessage, setEditMessage] = useState("");
 
   useEffect(() => {
     const fetchAudienceMembers = async () => {
       try {
-        if (audience === 'Teachers') {
-          const response = await axios.get(`${baseApi}/teacher/fetch-all`);
+        if (audience === "Teachers") {
+          const response = await axios.get(`${baseApi}/api/teacher/fetch-all`);
           setTeachers(response.data.teachers || []);
           setHods([]);
           setSelectedAudienceMembers([]);
-        } else if (audience === 'HODs') {
+        } else if (audience === "HODs") {
           // Fetch HODs
-          const hodResponse = await axios.get(`${baseApi}/hod/fetch`);
+          const hodResponse = await axios.get(`${baseApi}/api/hod/fetch`);
           const hodsData = hodResponse.data.hods || [];
 
           // Fetch teachers to map teacher names for HODs
-          const teacherResponse = await axios.get(`${baseApi}/teacher/fetch-all`);
+          const teacherResponse = await axios.get(
+            `${baseApi}/api/teacher/fetch-all`
+          );
           const teachersData = teacherResponse.data.teachers || [];
 
           // Map teacher names to HODs
-          const hodsWithTeacherNames = hodsData.map(hod => {
-            const teacher = teachersData.find(t => t._id === hod.teacher);
+          const hodsWithTeacherNames = hodsData.map((hod) => {
+            const teacher = teachersData.find((t) => t._id === hod.teacher);
             return {
               ...hod,
-              teacherName: teacher ? teacher.name : '',
+              teacherName: teacher ? teacher.name : "",
             };
           });
 
@@ -158,7 +174,7 @@ const InnerNotice = () => {
           setSelectedAudienceMembers([]);
         }
       } catch (error) {
-        console.error('Error fetching audience members:', error);
+        console.error("Error fetching audience members:", error);
         setTeachers([]);
         setHods([]);
         setSelectedAudienceMembers([]);
@@ -179,13 +195,13 @@ const InnerNotice = () => {
   };
 
   const handleSelectAllChange = () => {
-    if (audience === 'Teachers') {
+    if (audience === "Teachers") {
       if (selectedAudienceMembers.length === teachers.length) {
         setSelectedAudienceMembers([]);
       } else {
         setSelectedAudienceMembers(teachers.map((teacher) => teacher._id));
       }
-    } else if (audience === 'HODs') {
+    } else if (audience === "HODs") {
       if (selectedAudienceMembers.length === hods.length) {
         setSelectedAudienceMembers([]);
       } else {
@@ -197,28 +213,38 @@ const InnerNotice = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const response = await axios.get(`${baseApi}/directorNotice/all`);
+        const response = await axios.get(`${baseApi}/api/directorNotice/all`);
         if (response.data && response.data.data) {
           // Fetch teachers to map teacher names for HOD notices
-          const teacherResponse = await axios.get(`${baseApi}/teacher/fetch-all`);
+          const teacherResponse = await axios.get(
+            `${baseApi}/api/teacher/fetch-all`
+          );
           const teachersData = teacherResponse.data.teachers || [];
 
           // Normalize notices to add recipientNames array from recipientName string
           const normalizedNotices = response.data.data.map((notice) => {
             let recipientNames = [];
-            if (notice.audience === 'HODs') {
+            if (notice.audience === "HODs") {
               // For HOD audience, map recipientNames to teacher names
               if (Array.isArray(notice.recipientName)) {
                 recipientNames = notice.recipientName.map((recip) => {
-                  const teacher = teachersData.find(t => t.name === recip);
+                  const teacher = teachersData.find((t) => t.name === recip);
                   return teacher ? teacher.name : recip;
                 });
-              } else if (typeof notice.recipientName === 'string') {
-                const teacher = teachersData.find(t => t.name === notice.recipientName);
-                recipientNames = teacher ? [teacher.name] : [notice.recipientName];
+              } else if (typeof notice.recipientName === "string") {
+                const teacher = teachersData.find(
+                  (t) => t.name === notice.recipientName
+                );
+                recipientNames = teacher
+                  ? [teacher.name]
+                  : [notice.recipientName];
               }
             } else {
-              recipientNames = notice.recipientName ? (Array.isArray(notice.recipientName) ? [...notice.recipientName] : [notice.recipientName]) : [];
+              recipientNames = notice.recipientName
+                ? Array.isArray(notice.recipientName)
+                  ? [...notice.recipientName]
+                  : [notice.recipientName]
+                : [];
             }
             return {
               ...notice,
@@ -228,7 +254,7 @@ const InnerNotice = () => {
           setNotices(normalizedNotices);
         }
       } catch (error) {
-        console.error('Error fetching director notices:', error);
+        console.error("Error fetching director notices:", error);
       }
     };
     fetchNotices();
@@ -238,28 +264,37 @@ const InnerNotice = () => {
     e.preventDefault();
     try {
       let recipientNames = [];
-      if (audience === 'Teachers') {
+      if (audience === "Teachers") {
         recipientNames = teachers
           .filter((teacher) => selectedAudienceMembers.includes(teacher._id))
           .map((teacher) => teacher.name);
-      } else if (audience === 'HODs') {
+      } else if (audience === "HODs") {
         recipientNames = selectedAudienceMembers.map((selectedId) => {
-          const hod = hods.find(h => h._id === selectedId);
-          return hod && hod.teacher && hod.teacher.name ? hod.teacher.name : 'Unnamed HOD';
+          const hod = hods.find((h) => h._id === selectedId);
+          return hod && hod.teacher && hod.teacher.name
+            ? hod.teacher.name
+            : "Unnamed HOD";
         });
       }
 
       // Filter out empty recipient names to avoid server errors (only for Teachers)
-      if (audience === 'Teachers') {
-        recipientNames = recipientNames.filter(name => name && name.trim() !== '');
+      if (audience === "Teachers") {
+        recipientNames = recipientNames.filter(
+          (name) => name && name.trim() !== ""
+        );
       }
 
       // Adjust recipientNames array length if select all is chosen and length is off by one
       if (
-        (audience === 'Teachers' && selectedAudienceMembers.length === teachers.length + 1) ||
-        (audience === 'HODs' && selectedAudienceMembers.length === hods.length + 1)
+        (audience === "Teachers" &&
+          selectedAudienceMembers.length === teachers.length + 1) ||
+        (audience === "HODs" &&
+          selectedAudienceMembers.length === hods.length + 1)
       ) {
-        recipientNames = recipientNames.slice(0, selectedAudienceMembers.length);
+        recipientNames = recipientNames.slice(
+          0,
+          selectedAudienceMembers.length
+        );
       }
 
       const payloadData = {
@@ -270,31 +305,40 @@ const InnerNotice = () => {
         recipientNames,
       };
 
-      const response = await axios.post(`${baseApi}/directorNotice/create`, payloadData);
+      const response = await axios.post(
+        `${baseApi}/api/directorNotice/create`,
+        payloadData
+      );
       // Normalize the newly created notice to add recipientNames array
       const newNotice = response.data.notices[0];
       const normalizedNewNotice = {
         ...newNotice,
-        recipientNames: newNotice.recipientName ? [newNotice.recipientName] : [],
+        recipientNames: newNotice.recipientName
+          ? [newNotice.recipientName]
+          : [],
       };
       setNotices((prevNotices) => [normalizedNewNotice, ...prevNotices]);
     } catch (error) {
-      console.error('Error creating notice:', error);
+      console.error("Error creating notice:", error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      console.log('Deleting notice with id:', id);
-      const response = await axios.delete(`${baseApi}/directorNotice/delete/${id}`);
-      console.log('Delete response:', response);
+      console.log("Deleting notice with id:", id);
+      const response = await axios.delete(
+        `${baseApi}/api/directorNotice/delete/${id}`
+      );
+      console.log("Delete response:", response);
       if (response.status === 200 || response.status === 204) {
-        setNotices((prevNotices) => prevNotices.filter((notice) => notice._id !== id));
+        setNotices((prevNotices) =>
+          prevNotices.filter((notice) => notice._id !== id)
+        );
       } else {
-        console.error('Failed to delete notice:', response);
+        console.error("Failed to delete notice:", response);
       }
     } catch (error) {
-      console.error('Error deleting notice:', error);
+      console.error("Error deleting notice:", error);
     }
   };
 
@@ -308,16 +352,19 @@ const InnerNotice = () => {
   const handleEditClose = () => {
     setEditDialogOpen(false);
     setEditNoticeId(null);
-    setEditTitle('');
-    setEditMessage('');
+    setEditTitle("");
+    setEditMessage("");
   };
 
   const handleEditSave = async () => {
     try {
-      const response = await axios.put(`${baseApi}/directorNotice/update/${editNoticeId}`, {
-        title: editTitle,
-        message: editMessage,
-      });
+      const response = await axios.put(
+        `${baseApi}/api/directorNotice/update/${editNoticeId}`,
+        {
+          title: editTitle,
+          message: editMessage,
+        }
+      );
       setNotices((prevNotices) =>
         prevNotices.map((notice) =>
           notice._id === editNoticeId ? response.data.notice : notice
@@ -325,28 +372,36 @@ const InnerNotice = () => {
       );
       handleEditClose();
     } catch (error) {
-      console.error('Error updating notice:', error);
+      console.error("Error updating notice:", error);
     }
   };
 
   // Group notices by title, message, audience, and createdAt (date only), combining recipient names
   const groupedNotices = notices.reduce((acc, notice) => {
-    const createdDate = notice.createdAt ? new Date(notice.createdAt).toISOString().split('T')[0] : '';
+    const createdDate = notice.createdAt
+      ? new Date(notice.createdAt).toISOString().split("T")[0]
+      : "";
     const key = `${notice.title}||${notice.message}||${notice.audience}||${createdDate}`;
     if (!acc[key]) {
       // For HOD audience, ensure recipientNames are teacher names, not 'Unnamed HOD'
       let recipientNames = [];
-      if (notice.audience === 'HODs' && notice.recipientNames) {
+      if (notice.audience === "HODs" && notice.recipientNames) {
         recipientNames = Array.isArray(notice.recipientNames)
-          ? notice.recipientNames.filter(name => name !== 'Unnamed HOD')
+          ? notice.recipientNames.filter((name) => name !== "Unnamed HOD")
           : [notice.recipientNames];
       } else {
-        recipientNames = notice.recipientNames ? (Array.isArray(notice.recipientNames) ? [...notice.recipientNames] : [notice.recipientNames]) : [];
+        recipientNames = notice.recipientNames
+          ? Array.isArray(notice.recipientNames)
+            ? [...notice.recipientNames]
+            : [notice.recipientNames]
+          : [];
       }
       acc[key] = { ...notice, recipientNames: recipientNames };
     } else {
       if (notice.recipientNames) {
-        const newRecipients = Array.isArray(notice.recipientNames) ? notice.recipientNames : [notice.recipientNames];
+        const newRecipients = Array.isArray(notice.recipientNames)
+          ? notice.recipientNames
+          : [notice.recipientNames];
         newRecipients.forEach((recipient) => {
           if (!acc[key].recipientNames.includes(recipient)) {
             acc[key].recipientNames.push(recipient);
@@ -360,19 +415,20 @@ const InnerNotice = () => {
   // Prepare notices to display, merging HOD notices into teacher notices if teacher names match
   let noticesToDisplay = Object.values(groupedNotices);
 
-  if (audience === 'Teachers') {
+  if (audience === "Teachers") {
     // Get all teacher names
-    const teacherNames = teachers.map(t => t.name);
+    const teacherNames = teachers.map((t) => t.name);
 
     // Filter notices where recipientNames include any teacher name, regardless of audience
-    const teacherNotices = notices.filter(notice =>
-      notice.recipientNames &&
-      notice.recipientNames.some(name => teacherNames.includes(name))
+    const teacherNotices = notices.filter(
+      (notice) =>
+        notice.recipientNames &&
+        notice.recipientNames.some((name) => teacherNames.includes(name))
     );
 
     // Merge teacherNotices into noticesToDisplay, avoiding duplicates by _id
-    const existingIds = new Set(noticesToDisplay.map(n => n._id));
-    teacherNotices.forEach(teacherNotice => {
+    const existingIds = new Set(noticesToDisplay.map((n) => n._id));
+    teacherNotices.forEach((teacherNotice) => {
       if (!existingIds.has(teacherNotice._id)) {
         noticesToDisplay.push(teacherNotice);
       }
@@ -384,14 +440,18 @@ const InnerNotice = () => {
     ...notice,
     recipientNames: Array.isArray(notice.recipientNames)
       ? (() => {
-          const filtered = notice.recipientNames.filter(name => name !== 'Unnamed HOD');
-          return filtered.length > 0 ? filtered.join(', ') : 'Unnamed HOD';
+          const filtered = notice.recipientNames.filter(
+            (name) => name !== "Unnamed HOD"
+          );
+          return filtered.length > 0 ? filtered.join(", ") : "Unnamed HOD";
         })()
       : notice.recipientNames,
   }));
 
   // Sort notices by createdAt descending to show newest first
-  noticesToDisplay = noticesToDisplay.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  noticesToDisplay = noticesToDisplay.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   return (
     <div className="container mt-5">
@@ -425,7 +485,7 @@ const InnerNotice = () => {
           <option value="HODs">HODs</option>
         </select>
 
-        {(audience === 'Teachers' && teachers.length > 0) && (
+        {audience === "Teachers" && teachers.length > 0 && (
           <div className="audience-selection">
             <h5>Select Teachers</h5>
             <div className="audience-list">
@@ -446,14 +506,16 @@ const InnerNotice = () => {
                     checked={selectedAudienceMembers.includes(teacher._id)}
                     onChange={() => handleCheckboxChange(teacher._id)}
                   />
-                  <label htmlFor={`teacher-${teacher._id}`}>{teacher.name}</label>
+                  <label htmlFor={`teacher-${teacher._id}`}>
+                    {teacher.name}
+                  </label>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {(audience === 'HODs' && hods.length > 0) && (
+        {audience === "HODs" && hods.length > 0 && (
           <div className="audience-selection">
             <h5>Select HODs</h5>
             <div className="audience-list">
@@ -474,7 +536,9 @@ const InnerNotice = () => {
                     checked={selectedAudienceMembers.includes(hod._id)}
                     onChange={() => handleCheckboxChange(hod._id)}
                   />
-                  <label htmlFor={`hod-${hod._id}`}>{hod.teacher?.name || 'Unnamed HOD'}</label>
+                  <label htmlFor={`hod-${hod._id}`}>
+                    {hod.teacher?.name || "Unnamed HOD"}
+                  </label>
                 </div>
               ))}
             </div>
@@ -487,9 +551,14 @@ const InnerNotice = () => {
       </form>
 
       {/* Display notices below the submit button */}
-      <Box className="notices-container" sx={{ p: 3, display: "flex", flexDirection: "column", gap: 3, mt: 4 }}>
+      <Box
+        className="notices-container"
+        sx={{ p: 3, display: "flex", flexDirection: "column", gap: 3, mt: 4 }}
+      >
         {noticesToDisplay.length === 0 ? (
-          <Typography variant="h6" align="center">No notices to display.</Typography>
+          <Typography variant="h6" align="center">
+            No notices to display.
+          </Typography>
         ) : (
           noticesToDisplay.map((notice) => (
             <Card
@@ -504,20 +573,40 @@ const InnerNotice = () => {
               }}
             >
               <CardHeader
-                title={<Typography variant="h6" sx={{ fontWeight: "bold" }}>{notice.title}</Typography>}
+                title={
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {notice.title}
+                  </Typography>
+                }
                 subheader={
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" color="text.secondary">Audience: {notice.audience}</Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Audience: {notice.audience}
+                    </Typography>
                     {notice.createdAt && (
                       <Typography variant="caption" color="text.secondary">
                         {new Date(notice.createdAt).toLocaleDateString()}
                       </Typography>
                     )}
                     <Box>
-                      <IconButton aria-label="edit" onClick={() => handleEditOpen(notice)} sx={{ color: 'blue' }}>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => handleEditOpen(notice)}
+                        sx={{ color: "blue" }}
+                      >
                         <EditIcon />
                       </IconButton>
-                      <IconButton aria-label="delete" onClick={() => handleDelete(notice._id)} sx={{ color: 'red' }}>
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => handleDelete(notice._id)}
+                        sx={{ color: "red" }}
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </Box>
@@ -529,8 +618,15 @@ const InnerNotice = () => {
                 <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
                   {notice.message}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Recipient: {notice.recipientNames && notice.recipientNames.length > 0 ? notice.recipientNames : ''}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 1 }}
+                >
+                  Recipient:{" "}
+                  {notice.recipientNames && notice.recipientNames.length > 0
+                    ? notice.recipientNames
+                    : ""}
                 </Typography>
               </CardContent>
             </Card>
@@ -562,7 +658,9 @@ const InnerNotice = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleEditClose}>Cancel</Button>
-          <Button onClick={handleEditSave} variant="contained" color="primary">Save</Button>
+          <Button onClick={handleEditSave} variant="contained" color="primary">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

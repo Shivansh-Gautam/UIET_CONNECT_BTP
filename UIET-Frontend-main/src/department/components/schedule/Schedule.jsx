@@ -25,7 +25,7 @@ export default function Schedule() {
 
   const fetchSemesters = async () => {
     try {
-      const { data } = await axios.get(`${baseApi}/semester/all`, {
+      const { data } = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSemesters(data.data);
@@ -38,7 +38,7 @@ export default function Schedule() {
   const fetchSchedule = async () => {
     try {
       const { data } = await axios.get(
-        `${baseApi}/schedule/fetch-with-semester/${selectedSemester}`,
+        `${baseApi}/api/schedule/fetch-with-semester/${selectedSemester}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const formatted = data.data

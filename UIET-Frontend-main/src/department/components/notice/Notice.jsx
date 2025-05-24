@@ -1,4 +1,15 @@
-import { Box, Button, TextField, Typography, IconButton, MenuItem, Card, CardHeader, CardContent, Divider } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  IconButton,
+  MenuItem,
+  Card,
+  CardHeader,
+  CardContent,
+  Divider,
+} from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { noticeSchema } from "../../../yupSchema/noticeSchema";
@@ -7,12 +18,15 @@ import { baseApi } from "../../../environment";
 import { useEffect, useState } from "react";
 import SnackbarAlert from "../../../basic utility components/snackbar/SnackbarAlert";
 
-
 export default function Notice() {
   const token = localStorage.getItem("authToken"); // Fetch token
   const [notices, setNotices] = useState([]);
   const [editId, setEditId] = useState(null);
-  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const [years, setYears] = useState([]);
 
   const handleAlertClose = () => {
@@ -21,7 +35,7 @@ export default function Notice() {
 
   const fetchNotices = async () => {
     try {
-      const response = await axios.get(`${baseApi}/notice/all`, {
+      const response = await axios.get(`${baseApi}/api/notice/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotices(response.data.data);
@@ -32,14 +46,17 @@ export default function Notice() {
 
   const fetchYears = async () => {
     try {
-      const response = await axios.get(`${baseApi}/semester/all`, {
+      const response = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Fetch years response:", response);
       if (response.data && response.data.data) {
         setYears(response.data.data);
       } else {
-        console.error("Unexpected response structure for years:", response.data);
+        console.error(
+          "Unexpected response structure for years:",
+          response.data
+        );
       }
     } catch (error) {
       console.error("Error fetching years:", error);
@@ -52,7 +69,7 @@ export default function Notice() {
   }, []);
 
   const formik = useFormik({
-    initialValues: { title: "", message: "", audience:"", year: "" },
+    initialValues: { title: "", message: "", audience: "", year: "" },
     validationSchema: noticeSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
@@ -62,21 +79,37 @@ export default function Notice() {
           sanitizedValues.year = null;
         }
         if (editId) {
-          await axios.patch(`${baseApi}/notice/update/${editId}`, sanitizedValues, {
-            headers: { Authorization: `Bearer ${token}` },
+          await axios.patch(
+            `${baseApi}/api/notice/update/${editId}`,
+            sanitizedValues,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setAlert({
+            open: true,
+            message: "Notice updated successfully",
+            severity: "success",
           });
-          setAlert({ open: true, message: "Notice updated successfully", severity: "success" });
         } else {
-          await axios.post(`${baseApi}/notice/create`, sanitizedValues, {
+          await axios.post(`${baseApi}/api/notice/create`, sanitizedValues, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setAlert({ open: true, message: "Notice added successfully", severity: "success" });
+          setAlert({
+            open: true,
+            message: "Notice added successfully",
+            severity: "success",
+          });
         }
         resetForm();
         setEditId(null);
         fetchNotices();
       } catch (error) {
-        setAlert({ open: true, message: "Error processing request", severity: "error" });
+        setAlert({
+          open: true,
+          message: "Error processing request",
+          severity: "error",
+        });
         console.error("Error:", error);
       }
     },
@@ -84,19 +117,32 @@ export default function Notice() {
 
   const handleEdit = (notice) => {
     setEditId(notice._id);
-    formik.setValues({ title: notice.title, message: notice.message, audience: notice.audience, year: notice.year || "" });
+    formik.setValues({
+      title: notice.title,
+      message: notice.message,
+      audience: notice.audience,
+      year: notice.year || "",
+    });
     window.scrollTo(0, 0);
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.get(`${baseApi}/notice/delete/${id}`, {
+      await axios.get(`${baseApi}/api/notice/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAlert({ open: true, message: "Notice deleted successfully", severity: "success" });
+      setAlert({
+        open: true,
+        message: "Notice deleted successfully",
+        severity: "success",
+      });
       fetchNotices();
     } catch (error) {
-      setAlert({ open: true, message: "Error deleting notice", severity: "error" });
+      setAlert({
+        open: true,
+        message: "Error deleting notice",
+        severity: "error",
+      });
       console.error("Error deleting notice:", error);
     }
   };
@@ -105,7 +151,11 @@ export default function Notice() {
     <>
       <SnackbarAlert {...alert} onClose={handleAlertClose} />
 
-      <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2 }} onSubmit={formik.handleSubmit}>
+      <Box
+        component="form"
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        onSubmit={formik.handleSubmit}
+      >
         <Typography variant="h3" sx={{ textAlign: "center", fontWeight: 700 }}>
           {editId ? "Edit Notice" : "Add New Notice"}
         </Typography>
@@ -116,7 +166,6 @@ export default function Notice() {
           {...formik.getFieldProps("title")}
           error={formik.touched.title && Boolean(formik.errors.title)}
           helperText={formik.touched.title && formik.errors.title}
-          
         />
         <TextField
           multiline
@@ -129,50 +178,55 @@ export default function Notice() {
           helperText={formik.touched.message && formik.errors.message}
         />
         <TextField
+          select
+          fullWidth
+          label="Audience"
+          name="audience"
+          value={formik.values.audience}
+          onChange={formik.handleChange}
+          error={formik.touched.audience && Boolean(formik.errors.audience)}
+          helperText={formik.touched.audience && formik.errors.audience}
+          sx={{ mb: 2 }}
+        >
+          <MenuItem value="">Select Audience</MenuItem>
+          <MenuItem value="teacher">Teacher</MenuItem>
+          <MenuItem value="student">Student</MenuItem>
+        </TextField>
+
+        {formik.values.audience === "student" && (
+          <TextField
             select
             fullWidth
-            label="Audience"
-            name="audience"
-            value={formik.values.audience}
+            label="Year"
+            name="year"
+            value={formik.values.year}
             onChange={formik.handleChange}
-            error={formik.touched.audience && Boolean(formik.errors.audience)}
-            helperText={formik.touched.audience && formik.errors.audience}
+            error={formik.touched.year && Boolean(formik.errors.year)}
+            helperText={formik.touched.year && formik.errors.year}
             sx={{ mb: 2 }}
           >
-            <MenuItem value="">Select Audience</MenuItem>
-            <MenuItem value="teacher">Teacher</MenuItem>
-            <MenuItem value="student">Student</MenuItem>
+            <MenuItem value="">Select Year</MenuItem>
+            {years.map((year) => (
+              <MenuItem key={year._id} value={year._id}>
+                {`${year.semester_text} (${year.semester_num})`}
+              </MenuItem>
+            ))}
           </TextField>
-
-          {formik.values.audience === "student" && (
-            <TextField
-              select
-              fullWidth
-              label="Year"
-              name="year"
-              value={formik.values.year}
-              onChange={formik.handleChange}
-              error={formik.touched.year && Boolean(formik.errors.year)}
-              helperText={formik.touched.year && formik.errors.year}
-              sx={{ mb: 2 }}
-            >
-              <MenuItem value="">Select Year</MenuItem>
-              {years.map((year) => (
-                <MenuItem key={year._id} value={year._id}>
-                  {`${year.semester_text} (${year.semester_num})`}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
+        )}
 
         <Button fullWidth variant="contained" color="primary" type="submit">
           {editId ? "Update" : "Submit"}
         </Button>
       </Box>
 
-      <Box component="div" sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 4 }}>
+      <Box
+        component="div"
+        sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 4 }}
+      >
         {notices.length === 0 ? (
-          <Typography variant="h6" align="center">No notice found</Typography>
+          <Typography variant="h6" align="center">
+            No notice found
+          </Typography>
         ) : (
           notices.map((notice) => (
             <Card
@@ -187,10 +241,22 @@ export default function Notice() {
               }}
             >
               <CardHeader
-                title={<Typography variant="h6" sx={{ fontWeight: "bold" }}>{notice.title}</Typography>}
+                title={
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {notice.title}
+                  </Typography>
+                }
                 subheader={
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" color="text.secondary">Audience: {notice.audience}</Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Audience: {notice.audience}
+                    </Typography>
                     {notice.createdAt && (
                       <Typography variant="caption" color="text.secondary">
                         {new Date(notice.createdAt).toLocaleDateString()}
@@ -200,10 +266,16 @@ export default function Notice() {
                 }
                 action={
                   <Box>
-                    <IconButton color="primary" onClick={() => handleEdit(notice)}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(notice)}
+                    >
                       <Edit />
                     </IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(notice._id)}>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(notice._id)}
+                    >
                       <Delete />
                     </IconButton>
                   </Box>

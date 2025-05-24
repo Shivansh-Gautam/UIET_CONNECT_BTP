@@ -35,7 +35,7 @@ export default function ExaminationsTeacher() {
 
   const fetchSemesters = async () => {
     try {
-      const res = await axios.get(`${baseApi}/semester/all`, {
+      const res = await axios.get(`${baseApi}/api/semester/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSemesters(res.data.data || []);
@@ -47,7 +47,7 @@ export default function ExaminationsTeacher() {
 
   const fetchSubjects = async (semesterId) => {
     try {
-      const res = await axios.get(`${baseApi}/subject/fetch-with-query`, {
+      const res = await axios.get(`${baseApi}/api/subject/fetch-with-query`, {
         params: { student_class: semesterId },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -62,7 +62,7 @@ export default function ExaminationsTeacher() {
     if (!semesterId) return;
     try {
       const res = await axios.get(
-        `${baseApi}/examination/semester/${semesterId}`,
+        `${baseApi}/api/examination/semester/${semesterId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -97,14 +97,18 @@ export default function ExaminationsTeacher() {
 
       try {
         if (editId) {
-          await axios.patch(`${baseApi}/examination/update/${editId}`, values, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await axios.patch(
+            `${baseApi}/api/examination/update/${editId}`,
+            values,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           // Removed snackbar success handling
           setEditId(null);
         } else {
           await axios.post(
-            `${baseApi}/examination/create`,
+            `${baseApi}/api/examination/create`,
             {
               date: formattedDate,
               examType: values.examType,

@@ -209,7 +209,7 @@ export default function Teacher() {
     }
     try {
       setLoading(true);
-      const response = await axios.get(`${baseApi}/teacher/fetch-single`, {
+      const response = await axios.get(`${baseApi}/api/teacher/fetch-single`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeacher(response.data.teacher);
