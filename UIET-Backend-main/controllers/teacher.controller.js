@@ -55,49 +55,79 @@ module.exports = {
     }
   },
 
-  loginTeacher: async (req, res) => {
-    try {
-      const teacher = await Teacher.findOne({ email: req.body.email });
-      if (teacher) {
-        const isAuth = bcrypt.compareSync(req.body.password, teacher.password);
-        if (isAuth) {
-          const jwtSecret = process.env.JWT_SECRET;
-          const token = jwt.sign(
-            {
-              id: teacher._id,
-              department: teacher.department,
-              name: teacher.name,
-              image_url: teacher.teacher_image,
-              role: "TEACHER",
-            },
-            jwtSecret
-          );
-
-          res.header("Authorization", token);
-          res.status(200).json({
-            success: true,
-            message: "successfully login",
-            user: {
-              id: teacher._id,
-              department: teacher.department,
-              teacher_name: teacher.teacher_name,
-              image_url: teacher.teacher_image,
-              role: "TEACHER",
-            },
-          });
-        } else {
-          res.status(401).json({ success: false, message: "invalid password" });
-        }
-      } else {
-        res.status(401).json({ success: false, message: "Teacher not found" });
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "internal server error:[Teacher login].",
-      });
-    }
-  },
+ loginTeacher: async (req, res) => {
+     try {
+       console.log('Login attempt for email:', req.body.email); // Debug log
+       const teacher = await Teacher.findOne({ email: req.body.email });
+       
+       if (!teacher) {
+         console.log('Teacher not found for email:', req.body.email);
+         return res.status(401).json({ 
+           success: false, 
+           message: "Invalid credentials",
+           details: {
+             suggestion: "Please check your email or register if new",
+             code: "EMAIL_NOT_FOUND"
+           }
+         });
+       }
+ 
+       console.log('Found teacher:', teacher.email);
+       const isAuth = bcrypt.compareSync(req.body.password, teacher.password);
+       
+       if (!isAuth) {
+         console.log('Password mismatch for teacher:', teacher.email);
+         return res.status(401).json({ 
+           success: false, 
+           message: "Invalid credentials",
+           details: {
+             suggestion: "Please check your password or reset it if forgotten",
+             code: "INVALID_PASSWORD"
+           }
+         });
+       }
+ 
+       if (!process.env.JWT_SECRET) {
+         console.error('JWT_SECRET is not set in environment variables');
+         return res.status(500).json({ 
+           success: false, 
+           message: "Server configuration error" 
+         });
+       }
+ 
+       const token = jwt.sign(
+         {
+           id: teacher._id,
+           department: teacher.department,
+           name: teacher.name, // Changed from teacher_name to name
+           image_url: teacher.teacher_image,
+           role: "TEACHER",
+         },
+         process.env.JWT_SECRET,
+         { expiresIn: '1h' }
+       );
+ 
+       console.log('Generated token for teacher:', teacher.email); // Debug log
+       res.header("Authorization", token);
+       return res.status(200).json({
+         success: true,
+         message: "Login successful",
+         user: {
+           id: teacher._id,
+           department: teacher.department,
+           name: teacher.name, // Changed from teacher_name to name
+           image_url: teacher.teacher_image,
+           role: "TEACHER",
+         },
+       });
+     } catch (error) {
+       console.error('Login error:', error);
+       res.status(500).json({
+         success: false,
+         message: "Internal server error",
+       });
+     }
+   },
 
   getTeachersWithQuery: async (req, res) => {
     try {
