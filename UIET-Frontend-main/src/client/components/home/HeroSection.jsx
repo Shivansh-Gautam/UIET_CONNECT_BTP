@@ -17,7 +17,8 @@ const HeroSection = () => {
       sx={{
         bgcolor: "#EEEEED",
         p: 4,
-        borderRadius: "50px",margin:"40px",
+        borderRadius: "50px",
+        margin: "40px",
         minHeight: "100vh",
       }}
     >
@@ -31,7 +32,7 @@ const HeroSection = () => {
         {/* Left Content */}
         <Grid item xs={12} md={6} sx={{ maxWidth: "600px", mx: "auto" }}>
           <Typography variant="h3" fontWeight="bold" gutterBottom>
-            <span>Enhancing  </span>
+            <span>Enhancing </span>
             <Typography component="span" variant="h3" color="primary">
               Learning{" "}
             </Typography>
